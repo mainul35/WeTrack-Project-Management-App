@@ -5,43 +5,44 @@
  */
 package view;
 
-import java.util.Optional;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.application.Platform;
+import javafx.embed.swing.SwingNode;
+import javafx.geometry.Pos;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.GridPane;
 
 /**
  *
  * @author Mainul35
  */
-public class CreatePhaseWindow extends TextInputDialog {
+public class CreatePhaseWindow extends ScrollPane {
+    
+    private static CreatePhaseWindow window = null;
+    public CreatePhaseWindow(long projectId) {
+        window = this;
+        this.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        this.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        GridPane gp = new GridPane();
+        gp.setMinSize(600, 220);
+        
+        
+        gp.setAlignment(Pos.CENTER);
 
-    public CreatePhaseWindow() {
-        this.setTitle("Create P");
-        this.setHeaderText(null);
-        this.setContentText("Please enter your Project Name:");
-        Optional<String> result = this.showAndWait();
-
-// The Java 8 way to get the response value (with lambda expression).
-        result.ifPresent(name -> {
-            save();
+        this.setContent(gp);
+        Main.borderPane.setTop(WeTrackMenuBar.getMenuBar());
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                //javaFX operations should go here
+                SwingNode sn = new SwingNode();
+                sn.setContent(new CreatePhaseSwing(projectId));
+                gp.getChildren().add(sn);
+                Main.borderPane.setCenter(CreatePhaseWindow.window);
+            }
         });
     }
 
-    public TextField getTextField() {
-        return this.getEditor();
-    }
-
     private void save() {
-        if(this.getTextField().getText().isEmpty()==false){
-        if (Controller.ProjectController.createProject(System.currentTimeMillis(), this.getTextField().getText(), LogInForm.getCurrentSessionUser().getEmail()) == true) {
-            Main.showMessageDialog(Alert.AlertType.CONFIRMATION, "Congrats", null, "Project created successfully.");
-        } else {
-            Main.showMessageDialog(Alert.AlertType.ERROR, "Failure", null, "Sorry, project creation failed!");
-        }
-        }else{
-            Main.showMessageDialog(Alert.AlertType.ERROR, "Error", null, "A project must have a name");
-        }
         
     }
 }

@@ -48,16 +48,7 @@ class SetupDatabase {
         if (flag == true) {
             System.err.println("Table 'User' created successfully.");
         }
-        sql = "CREATE TABLE if not exists \"phase\" (\n"
-                + "\"phaseId\"  INTEGER AUTO_INCREMENT,\n"
-                + "\"phaseName\"  varchar,\n"
-                + "\"phaseLength\"  INTEGER,\n"
-                + "PRIMARY KEY (\"phaseId\")\n"
-                + ");";
-        flag = manager.createTable(sql);
-        if (flag == true) {
-            System.err.println("Table 'phase' created successfully.");
-        }
+        
         sql = "CREATE TABLE if not exists \"phaseDependencies\"(\n"
                 + "\"independentPhaseId\"  INTEGER,\n"
                 + "\"dependentPhaseId\"  INTEGER,\n"
@@ -95,7 +86,20 @@ class SetupDatabase {
         if (flag == true) {
             System.err.println("Table 'project' created successfully.");
         }
-
+        
+        sql = "CREATE TABLE if not exists \"phase\" (\n"
+                + "\"phaseId\"  INTEGER AUTO_INCREMENT,\n"
+                + "\"phaseName\"  varchar,\n"
+                + "\"phaseLength\"  INTEGER,\n"
+                + "\"projectId\"  INTEGER,\n"
+                + "PRIMARY KEY (\"phaseId\"),\n"
+                + "FOREIGN KEY (\"projectId\") REFERENCES \"project\" (\"projectId\")\n"
+                + ");";
+        flag = manager.createTable(sql);
+        if (flag == true) {
+            System.err.println("Table 'phase' created successfully.");
+        }
+        
         sql = "CREATE TABLE if not exists \"userInPhases\" (\n"
                 + "\"phaseId\"  INTEGER,\n"
                 + "\"userEmail\"  VARCHAR NOT NULL,\n"
@@ -108,17 +112,17 @@ class SetupDatabase {
             System.err.println("Table 'userInPhases' created successfully.");
         }
 
-        sql = "CREATE TABLE if not exists \"phasesInProject\" (\n"
-                + "\"projectId\"  INTEGER,\n"
-                + "\"phaseId\"  INTEGER,\n"
-                + "PRIMARY KEY (\"projectId\", \"phaseId\"),\n"
-                + "FOREIGN KEY (\"phaseId\") REFERENCES \"phase\" (\"phaseId\"),\n"
-                + "FOREIGN KEY (\"projectId\") REFERENCES \"project\" (\"projectId\")\n"
-                + ");";
-        flag = manager.createTable(sql);
-        if (flag == true) {
-            System.err.println("Table 'phasesInProject' created successfully.");
-        }
+//        sql = "CREATE TABLE if not exists \"phasesInProject\" (\n"
+//                + "\"projectId\"  INTEGER,\n"
+//                + "\"phaseId\"  INTEGER,\n"
+//                + "PRIMARY KEY (\"projectId\", \"phaseId\"),\n"
+//                + "FOREIGN KEY (\"phaseId\") REFERENCES \"phase\" (\"phaseId\"),\n"
+//                + "FOREIGN KEY (\"projectId\") REFERENCES \"project\" (\"projectId\")\n"
+//                + ");";
+//        flag = manager.createTable(sql);
+//        if (flag == true) {
+//            System.err.println("Table 'phasesInProject' created successfully.");
+//        }
 
         sql = "CREATE TABLE if not exists \"skill\" (\n"
                 + "\"skillId\"  INTEGER,\n"

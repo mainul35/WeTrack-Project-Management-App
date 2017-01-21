@@ -22,13 +22,20 @@ public class WeTrackMenuBar extends javafx.scene.control.MenuBar {
         newProject.setOnAction(action->{
             CreateProjectWindow cpw = new CreateProjectWindow();
         });
-        MenuItem newPhase = new MenuItem("New Phase");
+        MenuItem openProject = new MenuItem("Open Project");
+        openProject.setOnAction(value->{
+            OpenProject op = new OpenProject();
+            op.setVisible(true);
+        });
         MenuItem exit = new MenuItem("Exit");
-        fileMenu.getItems().addAll(newProject, newPhase, exit);
+        fileMenu.getItems().addAll(newProject, openProject, exit);
 
         Menu editMenu = new Menu("Edit");
         MenuItem editProfile = new MenuItem("Edit Profile");
         MenuItem addSkill = new MenuItem("Add skill");
+        addSkill.setOnAction(value->{
+            AddSkillWindow asw = new AddSkillWindow();
+        });
         editMenu.getItems().addAll(editProfile, addSkill);
 
         Menu logOutMenu = new Menu("Log out");
