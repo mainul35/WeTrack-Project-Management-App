@@ -27,8 +27,21 @@ public class WeTrackMenuBar extends javafx.scene.control.MenuBar {
             OpenProject op = new OpenProject();
             op.setVisible(true);
         });
+        MenuItem logOut = new MenuItem("Log out");
+        logOut.setOnAction(e->{
+            Main.setTop(Main.getTopPane("WeTrack Login"));
+            LogInForm.getCurrentSessionUser().setAvailabilityDuration(0);
+            LogInForm.getCurrentSessionUser().setEmail("");
+            LogInForm.getCurrentSessionUser().setName("");
+            LogInForm.getCurrentSessionUser().setPassword("");
+            Main.getMainScreen().setCenter(LogInForm.getLoginForm());
+        });
+        
         MenuItem exit = new MenuItem("Exit");
-        fileMenu.getItems().addAll(newProject, openProject, exit);
+        exit.setOnAction(e->{
+            System.exit(0);
+        });
+        fileMenu.getItems().addAll(newProject, openProject, logOut, exit);
 
         Menu editMenu = new Menu("Edit");
         MenuItem editProfile = new MenuItem("Edit Profile");
@@ -37,10 +50,9 @@ public class WeTrackMenuBar extends javafx.scene.control.MenuBar {
             AddSkillWindow asw = new AddSkillWindow();
         });
         editMenu.getItems().addAll(editProfile, addSkill);
+        
 
-        Menu logOutMenu = new Menu("Log out");
-
-        this.getMenus().addAll(fileMenu, editMenu, logOutMenu);
+        this.getMenus().addAll(fileMenu, editMenu);
     }
 
     public static WeTrackMenuBar getMenuBar() {

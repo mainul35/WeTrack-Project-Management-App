@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,90 +27,67 @@ import javax.swing.JScrollPane;
  *
  * @author FURIOUS
  */
-public class ShowPhasesInProject extends AbstractFrame {
+public class SelectDependencyPhases extends AbstractFrame {
 
     JPanel pnlCheckbox = new JPanel();
     static String[] users = null;
-    static JRadioButton[] rdoSelectPhase = null;
+    static JCheckBox[] chkSelectPhase = null;
     static ArrayList<String> tempSelectedPhaseName = new ArrayList<>();
     static ArrayList<String> tempSelectedPhaseId = new ArrayList<>();
-    static long projectId;
     private int selectedRadioIndex;
+    private static JFrame frame;
+
     /**
      * Creates new form SelectGamePlayerRegistrationForm
      */
-    public ShowPhasesInProject(long projectId) {
+    public SelectDependencyPhases(long phaseId) {
         initComponents();
-        ShowPhasesInProject.projectId = projectId;
-        JFrame frame = this;
+        frame = this;
         JDBCManager manager = ConnectionManager.getConnection();
-        String sql = "select phaseId, phaseName\n"
-                + "from phase ph, project p\n"
-                + "where p.projectId = ph.projectId\n"
-                + "and ph.projectId = '" + projectId + "';";
+        String sql = "select phaseName\n"
+                + "from phase ph\n"
+                + "where ph.phaseName is not (select phaseName from phase where phaseId = ?)\n"
+                + "and ph.projectId = ?;";
 
         //Copied code
-        ArrayList<HashMap<String, String>> al = manager.getQueryData(sql);
+        ArrayList<HashMap<String, String>> al = manager.getQueryData(sql, phaseId, ShowPhasesInProject.projectId);
         int size = al.size();
         users = new String[size];
         pnlCheckbox.setLayout(new GridLayout(size, 1, 0, 2));
-        JButton btnOpen = this.btnEditPhase;
-        rdoSelectPhase = new JRadioButton[size];
+        JButton btnOpen = this.btnSaveDependency;
+        chkSelectPhase = new JCheckBox[size];
         for (int i = 0; i < size; i++) {
-            rdoSelectPhase[i] = new JRadioButton();
-            selectedRadioIndex = i;
-            rdoSelectPhase[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                    JRadioButton rdo = (JRadioButton) ae.getSource();
-                    for (int p = 0; p < size; p++) {
-                        if (rdoSelectPhase[p].isSelected()) {
-                            rdoSelectPhase[p].setSelected(false);
-                        }
-                    }
-                    rdo.setSelected(true);
-                }
-            });
-
-            rdoSelectPhase[i].setText(al.get(i).get("phaseName"));
-            pnlCheckbox.add(rdoSelectPhase[i]);
+            chkSelectPhase[i] = new JCheckBox();
+            chkSelectPhase[i].setText(al.get(i).get("phaseName"));
+            pnlCheckbox.add(chkSelectPhase[i]);
             for (int j = 0; j < tempSelectedPhaseName.size(); j++) {
-                if (rdoSelectPhase[i].getText().equals(tempSelectedPhaseName.get(j))) {
-                    rdoSelectPhase[i].setSelected(true);
+                if (chkSelectPhase[i].getText().equals(tempSelectedPhaseName.get(j))) {
+                    chkSelectPhase[i].setSelected(true);
                     break;
                 }
             }
         }
 
         frame.setDefaultCloseOperation(2);
-        btnEditPhase.addActionListener(new ActionListener() {
+        btnSaveDependency.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tempSelectedPhaseName.clear();
-                tempSelectedPhaseId.clear();
-                int size = rdoSelectPhase.length;
-                for (int i = 0, j = 0; i < size; i++) {
-                    if (rdoSelectPhase[i].isSelected() == true) {
-                        String sql = "select ph.phaseId from phase ph where ph.projectId = ? and ph.phaseName = ?";
-                        JDBCManager manager = ConnectionManager.getConnection();
-                        ArrayList<HashMap<String, String>>  al = manager.getQueryData(sql, ShowPhasesInProject.projectId, rdoSelectPhase[i].getText());
-                        EditPhaseWindow epw = new EditPhaseWindow(Long.parseLong(al.get(0).get("phaseId")));
-                        epw.setVisible(true);
+                try {
+                    String sql = "insert into phaseDependencies(independentPhaseId, dependentPhaseId)\n"
+                            + "select '" + phaseId + "', phaseId from phase where phaseName = ?;";
+                    JDBCManager manager = ConnectionManager.getConnection();
+                    for (int i = 0; i < chkSelectPhase.length; i++) {
+                        manager.insertData(sql, chkSelectPhase[i].getText());
                     }
+                    Main.showMessageDialog(Alert.AlertType.CONFIRMATION, "Success", null, "Dependencies added successfully.");
+                } catch (Exception ex) {
+                    Main.showMessageDialog(Alert.AlertType.ERROR, "Error", null, "Can't add this dependency.");
                 }
                 frame.dispose();
             }
 
         });
 
-        btnCreatePhase.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent al) {
-                CreatePhaseWindow cpw = new CreatePhaseWindow(projectId);
-                frame.dispose();
-            }
-        });
-        
         btnClose.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,19 +107,18 @@ public class ShowPhasesInProject extends AbstractFrame {
     private void initComponents() {
 
         scpn = new javax.swing.JScrollPane(pnlCheckbox);
-        btnEditPhase = new javax.swing.JButton();
+        btnSaveDependency = new javax.swing.JButton();
         btnClose = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        btnCreatePhase = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(51, 102, 255));
 
-        btnEditPhase.setBackground(new java.awt.Color(255, 255, 255));
-        btnEditPhase.setText("Edit Phase");
-        btnEditPhase.addActionListener(new java.awt.event.ActionListener() {
+        btnSaveDependency.setBackground(new java.awt.Color(255, 255, 255));
+        btnSaveDependency.setText("Save");
+        btnSaveDependency.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditPhaseActionPerformed(evt);
+                btnSaveDependencyActionPerformed(evt);
             }
         });
 
@@ -149,13 +126,6 @@ public class ShowPhasesInProject extends AbstractFrame {
         btnClose.setText("Close");
 
         jLabel1.setText("Please select a phase to open");
-
-        btnCreatePhase.setText("Create Phase");
-        btnCreatePhase.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCreatePhaseActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -167,13 +137,11 @@ public class ShowPhasesInProject extends AbstractFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnClose)
-                        .addGap(39, 39, 39)
-                        .addComponent(btnCreatePhase)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
-                        .addComponent(btnEditPhase))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnSaveDependency))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 176, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -185,28 +153,22 @@ public class ShowPhasesInProject extends AbstractFrame {
                 .addComponent(scpn, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEditPhase)
-                    .addComponent(btnClose)
-                    .addComponent(btnCreatePhase))
+                    .addComponent(btnSaveDependency)
+                    .addComponent(btnClose))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnEditPhaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditPhaseActionPerformed
+    private void btnSaveDependencyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveDependencyActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnEditPhaseActionPerformed
-
-    private void btnCreatePhaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreatePhaseActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCreatePhaseActionPerformed
+    }//GEN-LAST:event_btnSaveDependencyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClose;
-    private javax.swing.JButton btnCreatePhase;
-    private javax.swing.JButton btnEditPhase;
+    private javax.swing.JButton btnSaveDependency;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane scpn;
     // End of variables declaration//GEN-END:variables

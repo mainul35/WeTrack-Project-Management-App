@@ -7,8 +7,16 @@ package view;
 
 import Config.ConnectionManager;
 import com.JDBC.JDBCManager;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.control.Alert;
 
 /**
  *
@@ -18,20 +26,32 @@ public class CreatePhaseSwing extends javax.swing.JPanel {
 
     private static String selectedSkill;
     private static long projectId;
+    static String sql;
+    private static long phaseId;
+    static int i;
+    private Connection con;
 
     /**
      * Creates new form CreatePhaseSwing
      */
-    public CreatePhaseSwing(long projectId) {
+    public CreatePhaseSwing(long projectId) throws SQLException, ClassNotFoundException {
         CreatePhaseSwing.projectId = projectId;
         initComponents();
         ArrayList<HashMap<String, String>> al;
         String sql = "select skillName from skill";
-        JDBCManager manager = ConnectionManager.getConnection();
-        al = manager.getQueryData(sql);
-        for (int i = 0; i < al.size(); i++) {
-            jComboBox1.addItem(al.get(i).get("skillName"));
+        Class.forName("org.sqlite.JDBC");
+        con = DriverManager.getConnection("jdbc:sqlite:wetrack.db");
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                jComboBox1.addItem(rs.getString("skillName"));
+            }
         }
+//        JDBCManager manager = ConnectionManager.getConnection();
+//        al = manager.getQueryData(sql);
+//        for (int i = 0; i < al.size(); i++) {
+//            jComboBox1.addItem(al.get(i).get("skillName"));
+//        }
         jComboBox1.addActionListener(e -> {
             selectedSkill = jComboBox1.getSelectedItem().toString();
             System.out.println(selectedSkill);
@@ -138,19 +158,71 @@ public class CreatePhaseSwing extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         if (!txtPhaseName.getText().isEmpty()) {
-            long phaseId = System.currentTimeMillis();
-            String sql = "insert into phase(phaseId, phaseName, projectId)\n"
-                    + "values('"+phaseId+"','"+txtPhaseName.getText()+"','"+projectId+"');";
-            JDBCManager manager = ConnectionManager.getConnection();
-            manager.insertData(sql);
-            sql = "insert into skillsForPhase(phaseId, skillId)\n"
-                    + "select '" + phaseId + "', skillId from skill where skillName = '" + getSelectedSkill() + "';";
-            manager.insertData(sql);
-            sql = "insert into userInPhases(phaseId, userEmail)\n"
-                    + "values (?,?);";
-            for(int i = 0; i<AssignUserInPhase.getSelectedUserEmails().size(); i++){
-                manager.insertData(sql, phaseId, AssignUserInPhase.getSelectedUserEmails().get(i));
+            if (!jComboBox1.getSelectedItem().toString().isEmpty()) {
+                try{
+                if(AssignUserInPhase.getSelectedUserEmails().get(0)=="" || AssignUserInPhase.getSelectedUserEmails().get(0)==null){
+                try {
+                    phaseId = System.currentTimeMillis();
+
+                    sql = "select phaseName from phase where phaseName = ?";
+                    boolean b = false;
+                    try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                        stmt.setString(1, txtPhaseName.getText());
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next()) {
+                            Main.showMessageDialog(Alert.AlertType.ERROR, "Error", null, "This phase already exists in this project.");
+                            b = false;
+                        } else {
+                            b = true;
+                        }
+                    }
+                    if (b == true) {
+                        sql = "insert into phase(phaseId, phaseName, projectId)\n"
+                                + " values(?,?,?);";
+
+                        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                            stmt.setString(1, Long.toString(phaseId));
+                            stmt.setString(2, txtPhaseName.getText());
+                            stmt.setString(3, Long.toString(projectId));
+                            stmt.executeUpdate();
+                        }
+
+                        sql = "insert into skillsForPhase(phaseId, skillId)\n"
+                                + "select '" + phaseId + "', skillId from skill where skillName = ?;";
+
+                        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                            stmt.setString(1, getSelectedSkill());
+                            stmt.executeUpdate();
+                        }
+
+                        sql = "insert into userInPhases(phaseId, userEmail)\n"
+                                + "values (?,?);";
+
+                        for (i = 0; i < AssignUserInPhase.getSelectedUserEmails().size(); i++) {
+                            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                                stmt.setString(1, Double.toString(phaseId));
+                                stmt.setString(2, AssignUserInPhase.getSelectedUserEmails().get(i).toString());
+                                stmt.executeUpdate();
+                            }
+                        }
+
+                        Main.showMessageDialog(Alert.AlertType.CONFIRMATION, "Success", null, "Phase added successfully.");
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(CreatePhaseSwing.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                }else{
+                    Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please add a user in phase.");
+                }
+                }catch(IndexOutOfBoundsException ie){
+                    Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please add a user in phase.");
+                }
+            } else {
+                Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please select skill");
             }
+            
+        } else {
+            Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please enter a phase name.");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

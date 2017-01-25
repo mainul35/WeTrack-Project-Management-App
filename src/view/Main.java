@@ -9,17 +9,14 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.geometry.Insets;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.stage.Stage;
@@ -119,11 +116,17 @@ public class Main extends Application {
     }
 
     public static void showMessageDialog(Alert.AlertType alertType, String title, String headerText, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(message);
-        alert.showAndWait();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(alertType);
+                alert.setTitle(title);
+                alert.setHeaderText(headerText);
+                alert.setContentText(message);
+                alert.showAndWait();
+            }
+        });
+
     }
 
 }

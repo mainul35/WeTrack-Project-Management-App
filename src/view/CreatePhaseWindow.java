@@ -5,6 +5,9 @@
  */
 package view;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Pos;
@@ -33,11 +36,17 @@ public class CreatePhaseWindow extends ScrollPane {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                //javaFX operations should go here
-                SwingNode sn = new SwingNode();
-                sn.setContent(new CreatePhaseSwing(projectId));
-                gp.getChildren().add(sn);
-                Main.borderPane.setCenter(CreatePhaseWindow.window);
+                try {
+                    //javaFX operations should go here
+                    SwingNode sn = new SwingNode();
+                    sn.setContent(new CreatePhaseSwing(projectId));
+                    gp.getChildren().add(sn);
+                    Main.borderPane.setCenter(CreatePhaseWindow.window);
+                } catch (SQLException ex) {
+                    Logger.getLogger(CreatePhaseWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(CreatePhaseWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
