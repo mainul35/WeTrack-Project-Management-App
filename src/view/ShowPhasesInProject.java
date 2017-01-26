@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -95,9 +96,12 @@ public class ShowPhasesInProject extends AbstractFrame {
                         ArrayList<HashMap<String, String>>  al = manager.getQueryData(sql, ShowPhasesInProject.projectId, rdoSelectPhase[i].getText());
                         EditPhaseWindow epw = new EditPhaseWindow(Long.parseLong(al.get(0).get("phaseId")));
                         epw.setVisible(true);
+                        frame.dispose();
+                    }else{
+                        Main.showMessageDialog(Alert.AlertType.ERROR, "Error", null, "No phase selected.");
                     }
                 }
-                frame.dispose();
+                
             }
 
         });
@@ -138,7 +142,7 @@ public class ShowPhasesInProject extends AbstractFrame {
         setBackground(new java.awt.Color(51, 102, 255));
 
         btnEditPhase.setBackground(new java.awt.Color(255, 255, 255));
-        btnEditPhase.setText("Edit Phase");
+        btnEditPhase.setText("Phase Settings");
         btnEditPhase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditPhaseActionPerformed(evt);
@@ -169,7 +173,7 @@ public class ShowPhasesInProject extends AbstractFrame {
                         .addComponent(btnClose)
                         .addGap(39, 39, 39)
                         .addComponent(btnCreatePhase)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
                         .addComponent(btnEditPhase))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)

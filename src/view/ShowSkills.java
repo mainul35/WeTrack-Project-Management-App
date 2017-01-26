@@ -91,7 +91,7 @@ public class ShowSkills extends AbstractFrame {
         btnClose.setBackground(new java.awt.Color(255, 51, 51));
         btnClose.setText("Close");
 
-        jLabel1.setText("Please select a phase to open");
+        jLabel1.setText("Skills required for this phase");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -103,7 +103,7 @@ public class ShowSkills extends AbstractFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnClose)
                     .addComponent(jLabel1))
-                .addContainerGap(186, Short.MAX_VALUE))
+                .addContainerGap(195, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

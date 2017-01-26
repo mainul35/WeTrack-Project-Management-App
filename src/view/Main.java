@@ -5,8 +5,11 @@
  */
 package view;
 
+import Config.SetupDatabase;
+import com.JDBC.JDBCManager;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.application.Platform;
@@ -111,7 +114,15 @@ public class Main extends Application {
         return gridPane;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
+        File file = new File("wetrack.db");
+
+        if (file.exists()) //here's how to check
+        {
+            System.out.print("This database name already exists");
+        } else {
+            SetupDatabase sd = new SetupDatabase();
+        }
         launch(args);
     }
 

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -37,6 +38,7 @@ public class OpenProject extends AbstractFrame {
     static int selectedRadioIndex = 0;
     static String selectedProjectName = "";
     static ArrayList<HashMap<String, String>> al;
+
     /**
      * Creates new form SelectGamePlayerRegistrationForm
      */
@@ -101,10 +103,16 @@ public class OpenProject extends AbstractFrame {
                         users[j++] = al.get(i).get("projectId");
                     }
                 }
-                frame.dispose();
-                ShowPhasesInProject phasesInProject = new ShowPhasesInProject(tempSelectedProjectId);
-                System.out.println(tempSelectedProjectId);
-                phasesInProject.setVisible(true);
+                if (tempSelectedProjectId != 0) {
+                    frame.dispose();
+
+                    ShowPhasesInProject phasesInProject = new ShowPhasesInProject(tempSelectedProjectId);
+                    System.out.println(tempSelectedProjectId);
+                    phasesInProject.setVisible(true);
+                } else {
+                    Main.showMessageDialog(Alert.AlertType.ERROR, "Error", null, "No project exists.");
+                }
+
             }
         });
 

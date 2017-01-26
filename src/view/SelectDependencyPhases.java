@@ -125,7 +125,7 @@ public class SelectDependencyPhases extends AbstractFrame {
         btnClose.setBackground(new java.awt.Color(255, 51, 51));
         btnClose.setText("Close");
 
-        jLabel1.setText("Please select a phase to open");
+        jLabel1.setText("Please select a phase dependencies");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -141,7 +141,7 @@ public class SelectDependencyPhases extends AbstractFrame {
                         .addComponent(btnSaveDependency))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 176, Short.MAX_VALUE)))
+                        .addGap(0, 147, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(

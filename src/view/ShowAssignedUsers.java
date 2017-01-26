@@ -96,7 +96,7 @@ public class ShowAssignedUsers extends AbstractFrame {
         btnClose.setBackground(new java.awt.Color(255, 51, 51));
         btnClose.setText("Close");
 
-        jLabel1.setText("Please select at least one user fro this phase");
+        jLabel1.setText("Assigned users in phase");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,7 +112,7 @@ public class ShowAssignedUsers extends AbstractFrame {
                         .addComponent(btnAdd))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 104, Short.MAX_VALUE)))
+                        .addGap(0, 204, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(

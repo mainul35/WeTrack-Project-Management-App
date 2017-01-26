@@ -159,8 +159,7 @@ public class CreatePhaseSwing extends javax.swing.JPanel {
         // TODO add your handling code here:
         if (!txtPhaseName.getText().isEmpty()) {
             if (!jComboBox1.getSelectedItem().toString().isEmpty()) {
-                try{
-                if(AssignUserInPhase.getSelectedUserEmails().get(0)=="" || AssignUserInPhase.getSelectedUserEmails().get(0)==null){
+                if(AssignUserInPhase.getSelectedUserEmails().get(0)!=""){
                 try {
                     phaseId = System.currentTimeMillis();
 
@@ -205,7 +204,6 @@ public class CreatePhaseSwing extends javax.swing.JPanel {
                                 stmt.executeUpdate();
                             }
                         }
-
                         Main.showMessageDialog(Alert.AlertType.CONFIRMATION, "Success", null, "Phase added successfully.");
                     }
                 } catch (SQLException ex) {
@@ -214,13 +212,9 @@ public class CreatePhaseSwing extends javax.swing.JPanel {
                 }else{
                     Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please add a user in phase.");
                 }
-                }catch(IndexOutOfBoundsException ie){
-                    Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please add a user in phase.");
-                }
             } else {
                 Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please select skill");
             }
-            
         } else {
             Main.showMessageDialog(Alert.AlertType.WARNING, "Warning", null, "Please enter a phase name.");
         }

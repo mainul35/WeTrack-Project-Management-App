@@ -11,7 +11,7 @@ import com.JDBC.JDBCManager;
  *
  * @author Mainul35
  */
-class SetupDatabase {
+public class SetupDatabase {
 
     public SetupDatabase() {
         JDBCManager manager = ConnectionManager.getConnection();
@@ -157,9 +157,5 @@ class SetupDatabase {
         if (flag == true) {
             System.err.println("Table 'skill' created successfully.");
         }
-    }
-    
-    public static void main(String[] args) {
-        new SetupDatabase();
     }
 }
